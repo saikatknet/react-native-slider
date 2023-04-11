@@ -77,6 +77,11 @@ export default class Slider extends PureComponent {
     maximumValue: PropTypes.number,
 
     /**
+     * Initial maximum value of the slider. Default value is 1.
+     */
+    bufferValue: PropTypes.number,
+
+    /**
      * Step value of the slider. The value should be between 0 and
      * (maximumValue - minimumValue). Default value is 0.
      */
@@ -137,6 +142,11 @@ export default class Slider extends PureComponent {
      * The style applied to the track.
      */
     trackStyle: ViewPropTypes.style,
+
+    /**
+     * The style applied to the buffer.
+     */
+    bufferStyle: ViewPropTypes.style,
 
     /**
      * The style applied to the thumb.
@@ -218,6 +228,8 @@ export default class Slider extends PureComponent {
     const {
       minimumValue,
       maximumValue,
+      bufferValue,
+      bufferStyle,
       minimumTrackTintColor,
       maximumTrackTintColor,
       thumbTintColor,
@@ -248,6 +260,10 @@ export default class Slider extends PureComponent {
       outputRange: [0, containerSize.width - thumbSize.width],
       // extrapolate: 'clamp',
     });
+    const minimumBufferWidth = value.interpolate({
+      inputRange: [bufferValue, maximumValue],
+      outputRange: [0, containerSize.width - thumbSize.width],
+    });
     const valueVisibleStyle = {};
     if (!allMeasured) {
       valueVisibleStyle.opacity = 0;
@@ -256,6 +272,13 @@ export default class Slider extends PureComponent {
     const minimumTrackStyle = {
       position: "absolute",
       width: Animated.add(minimumTrackWidth, thumbSize.width / 2),
+      backgroundColor: minimumTrackTintColor,
+      ...valueVisibleStyle,
+    };
+
+    const minimumBufferStyle = {
+      position: "absolute",
+      width: Animated.add(minimumBufferWidth, thumbSize.width / 2),
       backgroundColor: minimumTrackTintColor,
       ...valueVisibleStyle,
     };
@@ -276,6 +299,10 @@ export default class Slider extends PureComponent {
           ]}
           renderToHardwareTextureAndroid
           onLayout={this._measureTrack}
+        />
+        <Animated.View
+          renderToHardwareTextureAndroid
+          style={[mainStyles.buffer, bufferStyle, minimumBufferStyle]}
         />
         <Animated.View
           renderToHardwareTextureAndroid
@@ -568,6 +595,13 @@ var defaultStyles = StyleSheet.create({
   track: {
     height: TRACK_SIZE,
     borderRadius: TRACK_SIZE / 2,
+    zIndex: 99,
+  },
+  buffer: {
+    height: TRACK_SIZE,
+    borderRadius: TRACK_SIZE / 2,
+    backgroundColor: "rgba(255,255,255, 0.5)",
+    zIndex: 9,
   },
   thumb: {
     position: "absolute",

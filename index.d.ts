@@ -36,6 +36,12 @@ declare module 'react-native-slider' {
      */
     maximumValue?: number
 
+
+    /**
+     * Initial buffer value of the slider. Default value is 0.
+     */
+    bufferValue?: number
+
     /**
      * Step value of the slider. The value should be between 0 and
      * (maximumValue - minimumValue). Default value is 0.
@@ -94,6 +100,12 @@ declare module 'react-native-slider' {
      * The style applied to the track.
      */
     trackStyle?: StyleProp<ViewStyle>
+
+
+    /**
+     * The style applied to the buffer.
+     */
+    bufferStyle?: StyleProp<ViewStyle>
 
     /**
      * The style applied to the thumb.
