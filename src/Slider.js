@@ -198,6 +198,7 @@ export default class Slider extends PureComponent {
     thumbSize: { width: 0, height: 0 },
     allMeasured: false,
     value: new Animated.Value(this.props.value),
+    buffer: new Animated.Value(this.props.bufferValue),
   };
 
   UNSAFE_componentWillMount() {
@@ -214,12 +215,19 @@ export default class Slider extends PureComponent {
 
   UNSAFE_componentWillReceiveProps(nextProps) {
     const newValue = nextProps.value;
-
     if (this.props.value !== newValue) {
       if (this.props.animateTransitions) {
         this._setCurrentValueAnimated(newValue);
       } else {
         this._setCurrentValue(newValue);
+      }
+    }
+    const bufferValue = nextProps.bufferValue;
+    if (this.props.bufferValue !== bufferValue) {
+      if (this.props.animateTransitions) {
+        this._setCurrentBufferAnimated(bufferValue);
+      } else {
+        this._setCurrentBuffer(bufferValue);
       }
     }
   }
@@ -245,7 +253,7 @@ export default class Slider extends PureComponent {
       animateTransitions,
       ...other
     } = this.props;
-    const { value, containerSize, trackSize, thumbSize, allMeasured } =
+    const { value, buffer, containerSize, trackSize, thumbSize, allMeasured } =
       this.state;
     const mainStyles = styles || defaultStyles;
     const thumbLeft = value.interpolate({
@@ -255,13 +263,14 @@ export default class Slider extends PureComponent {
         : [0, containerSize.width - thumbSize.width],
       // extrapolate: 'clamp',
     });
+
     const minimumTrackWidth = value.interpolate({
       inputRange: [minimumValue, maximumValue],
       outputRange: [0, containerSize.width - thumbSize.width],
       // extrapolate: 'clamp',
     });
-    const minimumBufferWidth = value.interpolate({
-      inputRange: [bufferValue, maximumValue],
+    const minimumBufferWidth = buffer.interpolate({
+      inputRange: [minimumValue, maximumValue],
       outputRange: [0, containerSize.width - thumbSize.width],
     });
     const valueVisibleStyle = {};
@@ -279,7 +288,7 @@ export default class Slider extends PureComponent {
     const minimumBufferStyle = {
       position: "absolute",
       width: Animated.add(minimumBufferWidth, thumbSize.width / 2),
-      backgroundColor: minimumTrackTintColor,
+      backgroundColor: "rgba(0,0,0,0.6)",
       ...valueVisibleStyle,
     };
 
@@ -302,7 +311,7 @@ export default class Slider extends PureComponent {
         />
         <Animated.View
           renderToHardwareTextureAndroid
-          style={[mainStyles.buffer, bufferStyle, minimumBufferStyle]}
+          style={[mainStyles.track, bufferStyle, minimumBufferStyle]}
         />
         <Animated.View
           renderToHardwareTextureAndroid
@@ -420,6 +429,7 @@ export default class Slider extends PureComponent {
       this.setState({
         containerSize: this._containerSize,
         trackSize: this._trackSize,
+        bufferSize: this._trackSize,
         thumbSize: this._thumbSize,
         allMeasured: true,
       });
@@ -475,6 +485,23 @@ export default class Slider extends PureComponent {
     this.state.value.setValue(value);
   };
 
+  _setCurrentBuffer = (value) => {
+    this.state.buffer.setValue(value);
+  };
+
+  _setCurrentBufferAnimated = (value) => {
+    const animationType = this.props.animationType;
+    const animationConfig = Object.assign(
+      {},
+      DEFAULT_ANIMATION_CONFIGS[animationType],
+      this.props.animationConfig,
+      {
+        toValue: value,
+      }
+    );
+    Animated[animationType](this.state.buffer, animationConfig).start();
+  };
+
   _setCurrentValueAnimated = (value: number) => {
     const animationType = this.props.animationType;
     const animationConfig = Object.assign(
@@ -485,7 +512,7 @@ export default class Slider extends PureComponent {
         toValue: value,
       }
     );
-
+    // console.log('type..', animationType, animationConfig);
     Animated[animationType](this.state.value, animationConfig).start();
   };
 
@@ -596,18 +623,20 @@ var defaultStyles = StyleSheet.create({
     height: TRACK_SIZE,
     borderRadius: TRACK_SIZE / 2,
     zIndex: 99,
+    backgroundColor: "rgba(0,0,0,0.8)",
   },
   buffer: {
+    position: "absolute",
     height: TRACK_SIZE,
     borderRadius: TRACK_SIZE / 2,
-    backgroundColor: "rgba(255,255,255, 0.5)",
-    zIndex: 9,
+    zIndex: 1,
   },
   thumb: {
     position: "absolute",
     width: THUMB_SIZE,
     height: THUMB_SIZE,
     borderRadius: THUMB_SIZE / 2,
+    zIndex: 999,
   },
   touchArea: {
     position: "absolute",
