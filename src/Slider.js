@@ -271,7 +271,8 @@ export default class Slider extends PureComponent {
     });
     const minimumBufferWidth = buffer.interpolate({
       inputRange: [minimumValue, maximumValue],
-      outputRange: [0, containerSize.width - thumbSize.width],
+      outputRange: [0, containerSize.width - 10],
+      extrapolate: "clamp",
     });
     const valueVisibleStyle = {};
     if (!allMeasured) {
@@ -288,7 +289,7 @@ export default class Slider extends PureComponent {
     const minimumBufferStyle = {
       position: "absolute",
       width: Animated.add(minimumBufferWidth, thumbSize.width / 2),
-      backgroundColor: "rgba(0,0,0,0.6)",
+      backgroundColor: "rgba(0,0,0,0.3)",
       ...valueVisibleStyle,
     };
 
@@ -622,21 +623,18 @@ var defaultStyles = StyleSheet.create({
   track: {
     height: TRACK_SIZE,
     borderRadius: TRACK_SIZE / 2,
-    zIndex: 99,
     backgroundColor: "rgba(0,0,0,0.8)",
   },
   buffer: {
     position: "absolute",
     height: TRACK_SIZE,
     borderRadius: TRACK_SIZE / 2,
-    zIndex: 1,
   },
   thumb: {
     position: "absolute",
     width: THUMB_SIZE,
     height: THUMB_SIZE,
     borderRadius: THUMB_SIZE / 2,
-    zIndex: 999,
   },
   touchArea: {
     position: "absolute",
