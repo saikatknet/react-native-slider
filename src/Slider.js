@@ -271,7 +271,7 @@ export default class Slider extends PureComponent {
     });
     const minimumBufferWidth = buffer.interpolate({
       inputRange: [minimumValue, maximumValue],
-      outputRange: [0, containerSize.width - 10],
+      outputRange: [0, containerSize.width],
       extrapolate: "clamp",
     });
     const valueVisibleStyle = {};
@@ -288,9 +288,15 @@ export default class Slider extends PureComponent {
 
     const minimumBufferStyle = {
       position: "absolute",
-      width: Animated.add(minimumBufferWidth, thumbSize.width / 2),
+      width: minimumBufferWidth,
       backgroundColor: "rgba(0,0,0,0.3)",
       ...valueVisibleStyle,
+    };
+
+    const bufferBg = {
+      backgroundColor:
+        bufferStyle.backgroundColor ||
+        minimumBufferStyle.backgroundColor,
     };
 
     const touchOverflowStyle = this._getTouchOverflowStyle();
@@ -312,7 +318,12 @@ export default class Slider extends PureComponent {
         />
         <Animated.View
           renderToHardwareTextureAndroid
-          style={[mainStyles.track, bufferStyle, minimumBufferStyle]}
+          style={[
+            mainStyles.track,
+            bufferStyle,
+            minimumBufferStyle,
+            bufferBg,
+          ]}
         />
         <Animated.View
           renderToHardwareTextureAndroid
