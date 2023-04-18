@@ -295,7 +295,7 @@ export default class Slider extends PureComponent {
 
     const bufferBg = {
       backgroundColor:
-        bufferStyle.backgroundColor ||
+        bufferStyle?.backgroundColor ||
         minimumBufferStyle.backgroundColor,
     };
 
