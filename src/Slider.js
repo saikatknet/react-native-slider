@@ -190,6 +190,7 @@ export default class Slider extends PureComponent {
     thumbTouchSize: { width: 40, height: 40 },
     debugTouchArea: false,
     animationType: "timing",
+    bufferValue: 0,
   };
 
   state = {
@@ -295,8 +296,7 @@ export default class Slider extends PureComponent {
 
     const bufferBg = {
       backgroundColor:
-        bufferStyle?.backgroundColor ||
-        minimumBufferStyle.backgroundColor,
+        bufferStyle?.backgroundColor || minimumBufferStyle.backgroundColor,
     };
 
     const touchOverflowStyle = this._getTouchOverflowStyle();
@@ -318,12 +318,7 @@ export default class Slider extends PureComponent {
         />
         <Animated.View
           renderToHardwareTextureAndroid
-          style={[
-            mainStyles.track,
-            bufferStyle,
-            minimumBufferStyle,
-            bufferBg,
-          ]}
+          style={[mainStyles.track, bufferStyle, minimumBufferStyle, bufferBg]}
         />
         <Animated.View
           renderToHardwareTextureAndroid
